@@ -1,3 +1,8 @@
+
+RuneAudio with support for MPD database proxy and remote music folder (aka satellite mode).
+
+This is a forked version of...
+
 RuneAudio
 Free and open source Hi-Fi music player for embedded hardware
 

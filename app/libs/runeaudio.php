@@ -2068,6 +2068,7 @@ if ($action === 'reset') {
             $redis->hSet('mpdconf', 'curl', 'yes');
             $redis->hSet('mpdconf', 'ffmpeg', 'yes');
             $redis->hSet('mpdconf', 'log_file', '/var/log/runeaudio/mpd.log');
+            $redis->hSet('mpdconf', 'satellitemode', '0');
             wrk_mpdconf($redis, 'writecfg');
             break;
         case 'writecfg':
@@ -2101,6 +2102,21 @@ if ($action === 'reset') {
                 $redis->hSet('mpdconf', 'state_file', '/var/lib/mpd/mpdstate');
             }
             unset($mpdcfg['state_file']);
+
+            if ($mpdcfg['satellitemode'] == '1') {
+                $output .= "\nmusic_directory\t\"smb://" . $mpdcfg['satellitehost'] . "/" . $mpdcfg['satellitefolder'] . "\"\n";
+                $output .= "\ndatabase {\n\tplugin \"proxy\"\n\thost \"" . $mpdcfg['satellitehost'] . "\"\n}\n";
+                unset($mpdcfg['db_file']);
+                unset($mpdcfg['music_directory']);
+            } else {
+                $redis->hSet('mpdconf', 'satellitemode', '0');
+            }
+
+            unset($mpdcfg['satellitemode']);
+            unset($mpdcfg['satellitehost']);
+            unset($mpdcfg['satellitefolder']);
+            unset($mpdcfg['satellite']);
+
             // --- general settings ---
             foreach ($mpdcfg as $param => $value) {
                 if ($param === 'audio_output_interface' OR $param === 'dsd_usb') {
@@ -2249,6 +2265,8 @@ if ($action === 'reset') {
             }
             break;
         case 'update':
+            $redis->hDel('mpdconf', 'satellitemode');
+            $redis->hDel('mpdconf', 'satellite');
             foreach ($args as $param => $value) {
                 $redis->hSet('mpdconf', $param, $value);
             }
@@ -3130,7 +3148,13 @@ function ui_libraryHome($redis)
     // runelog('bookmarks: ',$bookmarks);
     // $jsonHome = json_encode(array_merge($bookmarks, array(0 => array('networkMounts' => $networkmounts)), array(0 => array('USBMounts' => $usbmounts)), array(0 => array('webradio' => $webradios)), array(0 => array('Dirble' => $dirble->amount)), array(0 => array('ActivePlayer' => $activePlayer))));
     // $jsonHome = json_encode(array_merge($bookmarks, array(0 => array('networkMounts' => $networkmounts)), array(0 => array('USBMounts' => $usbmounts)), array(0 => array('webradio' => $webradios)), array(0 => array('Spotify' => $spotify)), array(0 => array('Dirble' => $dirble->amount)), array(0 => array('ActivePlayer' => $activePlayer))));
-    $jsonHome = json_encode(array('bookmarks' => $bookmarks, 'localStorages' => $localStorages, 'networkMounts' => $networkmounts, 'USBMounts' => $usbmounts, 'webradio' => $webradios, 'Spotify' => $spotify, 'Dirble' => $dirble->amount, 'ActivePlayer' => $activePlayer));
+
+    if ($redis->hGet('mpdconf', 'satellitemode') != '1') {
+        $jsonHome = json_encode(array('bookmarks' => $bookmarks, 'localStorages' => $localStorages, 'networkMounts' => $networkmounts, 'USBMounts' => $usbmounts, 'webradio' => $webradios, 'Spotify' => $spotify, 'Dirble' => $dirble->amount, 'ActivePlayer' => $activePlayer));
+    } else {
+        $jsonHome = json_encode(array('bookmarks' => $bookmarks, 'localStorages' => $localStorages, 'Spotify' => $spotify, 'Dirble' => $dirble->amount, 'ActivePlayer' => $activePlayer));
+    }
+
     // Encode UI response
     runelog('libraryHome JSON: ', $jsonHome);
     ui_render('library', $jsonHome);

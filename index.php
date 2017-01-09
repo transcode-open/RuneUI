@@ -51,6 +51,10 @@ $template->dev = $devmode;
 $activePlayer = $redis->get('activePlayer');
 // TODO: rework needed
 $template->activePlayer = $activePlayer;
+
+$satellitemode = $redis->hGet('mpdconf', 'satellitemode');
+$template->satellitemode = $satellitemode;
+
 // allowed controllers
 $controllers = array(
     'lyric',

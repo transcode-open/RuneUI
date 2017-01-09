@@ -202,6 +202,41 @@
                     <span class="help-block">This setting enables automatic update of MPD's database when files in music_directory are changed.</span>
                 </div>
             </div>
+
+            <!-- SGJ patch -->
+            <div class="form-group" >
+                <label class="control-label col-sm-2" for="satellitemode">Satellite mode</label>
+                <div class="col-sm-10">
+                    <label class="switch-light well" onclick="">
+                        <input id="satellitemode" name="conf[satellitemode]" type="checkbox" value="1" <?php if($this->conf['satellitemode'] == 1): ?> checked="checked" <?php endif ?>>
+                        <span><span>OFF</span><span>ON</span></span><a class="btn btn-primary"></a>
+                    </label>
+                    <span class="help-block">
+                        In this mode all queries are forwarded to an MPD server running on
+                        another host. Useful for low power devices that would have a hard time
+                        scanning a large music collection, or more generally to consolidate
+                        your personal music collection in one place and play from it in any
+                        room.
+                    </span>
+                </div>
+                <label class="col-sm-2 control-label" for="satellitehost">Remote MPD server</label>
+                <div class="col-sm-10">
+                    <input class="form-control osk-trigger input-lg" type="text" id="satellitehost" name="conf[satellitehost]" value="<?=$this->conf['satellitehost'] ?>" data-trigger="change">
+                    <span class="help-block">
+                      This is the host name or ip address of the MPD server to which queries will be forwarded.
+                    </span>
+                </div>
+                <label class="col-sm-2 control-label" for="satellitefolder">Music folder name</label>
+                <div class="col-sm-10">
+                    <input class="form-control osk-trigger input-lg" type="text" id="satellitefolder" name="conf[satellitefolder]" value="<?=$this->conf['satellitefolder'] ?>" data-trigger="change">
+                    <span class="help-block">
+                      This is the folder name of a Samba share on the remote MPD server where music is stored. 
+                      The server must allow guests to read from this share.
+                    </span>
+                </div>
+            </div>
+            <!-- end SGJ patch -->
+
         </fieldset>
         <div class="form-group form-actions">
             <div class="col-sm-offset-2 col-sm-10">
