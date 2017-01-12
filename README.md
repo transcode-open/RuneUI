@@ -1,10 +1,25 @@
 
-RuneAudio with support for MPD database proxy and remote music folder (aka satellite mode).
+## RuneAudio with satellite mode.
 
-This is a forked version of...
-
-RuneAudio
+This is a forked version of: RuneAudio
 Free and open source Hi-Fi music player for embedded hardware
+
+
+## Satellite mode
+
+In satellite mode your local instance of MPD forwards most calls to an instance of MPD running
+on another (probably more powerful) machine. The larger machine takes care of indexing your music
+collection. The MPD satellite plays from the collection by reading it via Samba. 
+
+The second machine needs:
+
+    1. MPD
+    2. A hard drive with the music collection
+    3. Samba
+
+Setting that up is not very difficult but it is also currently not part of this project. This 
+project extends the RuneUI MPD web frontend by adding an optional mode to the MPD settings in
+which the smbclient and proxy plugins of MPD are used to set up satellite mode.
 
 
 Copyright (C) 2013-2014 RuneAudio Team
